@@ -1,0 +1,31 @@
+version: '3.0'
+
+services:
+    rabbitmq:
+        image: rabbitmq
+        container_name: rabbitmq
+        hostname: rabbitmq
+        environment:
+            RABBITMQ_DEFAULT_USER: user
+            RABBITMQ_DEFAULT_PASS: password
+        expose:
+            - 5672
+            - 15672
+        ports:
+            - 5672:5672
+            - 15672:15672
+        healthcheck:
+          test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+          interval: 10s
+          timeout: 10s
+          retries: 5
+
+    websocket:
+        image: websocket
+        container_name: websocket
+        depends_on:
+          - rabbitmq
+        links:
+          - rabbitmq
+        ports:
+            - 8888:8888
